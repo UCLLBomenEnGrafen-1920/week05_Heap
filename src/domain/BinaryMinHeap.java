@@ -22,15 +22,25 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return values.get(0);
     }
 
-    public boolean addValue(E value) {
-        // geen null toevoegen aan de heap
-        if (value == null) throw new IllegalArgumentException();
-        // indien de heap leeg is: eerst initialiseren
-        if (this.isEmpty())
-            values = new ArrayList<E>();
+//    public boolean addValue(E value) {
+//        // geen null toevoegen aan de heap
+//        if (value == null) throw new IllegalArgumentException();
+//        // indien de heap leeg is: eerst initialiseren
+//        if (this.isEmpty())
+//            values = new ArrayList<E>();
+//
+//        values.add(value);//achteraan toevoegen
+//        this.bubbleUp();//bubbleUp vanaf de laatste zie slides theorie
+//        return true;
+//    }
 
-        values.add(value);//achteraan toevoegen
-        this.bubbleUp();//bubbleUp vanaf de laatste zie slides theorie
+    public boolean addValue(E value) {
+        if (value == null)
+            throw new IllegalArgumentException("Geen lege waarde toevoegen");
+        if (isEmpty())
+            values = new ArrayList<>();
+        values.add(value);
+        this.bubbleUp();
         return true;
     }
 
@@ -60,12 +70,12 @@ public class BinaryMinHeap<E extends Comparable<E>> {
 
 
     private void bubbleUp() {
-        int index = values.size() - 1;
-        int parent = getIndexOuder(index);
-        while (isValidIndex(parent) && values.get(index).compareTo(values.get(parent)) < 0) {
-            verwissel(index, parent);
-            index = parent;
-            parent = getIndexOuder(index);
+        int kind = values.size() - 1;
+        int ouder = getIndexOuder(kind);
+        while (isValidIndex(ouder) && values.get(kind).compareTo(values.get(ouder)) < 0) {
+            verwissel(kind, ouder);
+            kind = ouder;
+            ouder = getIndexOuder(kind);
         }
     }
 
@@ -77,6 +87,7 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         values.set(index2, temp);
     }
 
+
     public E removeSmallest() {
         if (this.isEmpty())
             throw new IllegalStateException("Kan niets verwijderen uit een lege boom");
@@ -87,42 +98,43 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return res;
     }
 
-    private int getIndexSmallestChild(int index) {
-        int childLeft = getIndexLinkerkind(index);
-        int childRight = getIndexRechterkind(index);
-        if (isValidIndex(childRight))
-            return values.get(childLeft).compareTo(values.get(childRight)) < 0 ? childLeft : childRight;
-        if (isValidIndex(childLeft))
-            return childLeft;
-        throw new IllegalArgumentException("No valid child in getIndexSmallestChild");
-    }
-
-    private int getIndexLargestChild(int index) {
-        int childLeft = getIndexLinkerkind(index);
-        int childRight = getIndexRechterkind(index);
-        if (isValidIndex(childRight))
-            return values.get(childLeft).compareTo(values.get(childRight)) > 0 ? childLeft : childRight;
-        if (isValidIndex(childLeft))
-            return childLeft;
-        throw new IllegalArgumentException("No valid child in getIndexLargestChild");
-
-    }
-
     private void bubbleDown() {
-        int parent = 0;
-        boolean goOn = true;
+        int ouder = 0;
+        int kindLinks;
+        int kindRechts;
+        int indexKleinste = ouder;
+        while (indexKleinste >= 0) {
+            kindLinks = this.getIndexLinkerkind(ouder);
+            kindRechts = this.getIndexRechterkind(ouder);
+            // zoek kleinste van ouder, kindRechts en kindLinks (indien bestaande)
+            if (isValidIndex(kindRechts))
+                indexKleinste = geefIndexKleinste(ouder, kindLinks, kindRechts);
+            else if (isValidIndex(kindLinks))
+                indexKleinste = geefIndexKleinste(ouder, kindLinks);
 
-        while (goOn) {
-            goOn = false;
-            if (heeftLinkerKind(parent)) {
-                int indexSmallestChild = getIndexSmallestChild(parent);
-                if (values.get(parent).compareTo(values.get(getIndexLargestChild(parent))) > 0) {
-                    verwissel(parent, indexSmallestChild);
-                    parent = indexSmallestChild;
-                    goOn = true;
-                }
+            // stop iteratie als ouder kleinste is
+            if (indexKleinste == ouder) {
+                indexKleinste = -1;
+            } else {
+                // verwissel ouder met kleinste kind en ga verder
+                verwissel(indexKleinste, ouder);
+                ouder = indexKleinste;
             }
         }
+    }
+
+    private int geefIndexKleinste(int een, int twee, int drie) {
+        int indexKleinste = geefIndexKleinste(een, twee);
+        if (values.get(drie).compareTo(values.get(indexKleinste)) < 0)
+            indexKleinste = drie;
+        return indexKleinste;
+    }
+
+    private int geefIndexKleinste(int een, int twee) {
+        if (values.get(een).compareTo(values.get(twee)) < 0)
+            return een;
+        else
+            return twee;
     }
 
 
