@@ -97,7 +97,11 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         //Collections.swap(values,index1,index2);
     }
 
-
+    /**
+     * Verwijdert het kleinste element van deze binary min heap
+     *
+     * @return het kleinste element
+     */
     public E removeSmallest() {
         if (this.isEmpty())
             throw new IllegalStateException("Kan niets verwijderen uit een lege boom");
@@ -159,20 +163,39 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return result;
     }
 
-    public boolean isValidArrayOfValues(List<E> givenValues) {
-        // to be completed
+    public static boolean isValidArrayOfValues(List<String> givenValues) {
         if (givenValues == null || givenValues.size() == 0)
             return false;
-        int index = 0;
-        int kindLinks = 1;
-        int kindRechts = 2;
-        if (kindRechts >= 0 && kindRechts < givenValues.size()) {
-            if (givenValues.get(index).compareTo(givenValues.get(kindRechts)) > 0)
-                return false;
-            kindRechts = kindRechts;
-        }
-        return false;
+        return isValidArrayOfValues(givenValues, 0);
     }
+
+    /**
+     * Controleert of lijst givenValues een geldige minHeap is, te vertrekken bij gegeven index
+     *
+     * @param givenValues: de lijst die gecontroleerd moet worden
+     * @param index:       vanwaar de lijst gecontroleerd wordt
+     */
+    private static boolean isValidArrayOfValues(List<String> givenValues, int index) {
+        // als index heeft geen kinderen heeft, is het zeker een minheap
+        int indexLinkerkind = 2 * index + 1;
+        if (indexLinkerkind >= givenValues.size())
+            return true;
+
+        // indien linkerkind bestaat
+        // controleren of ouder < kind && rest van boom controleren
+        boolean left = givenValues.get(index).compareTo(givenValues.get(indexLinkerkind)) < 0
+                && isValidArrayOfValues(givenValues, indexLinkerkind);
+
+        // indien rechterkind bestaat
+        // controleren of ouder < kind && rest van boom controleren
+        int indexRechterkind = 2 * index + 2;
+        boolean right = true;
+        if (indexRechterkind < givenValues.size())
+            right = givenValues.get(index).compareTo(givenValues.get(indexRechterkind)) < 0
+                    && isValidArrayOfValues(givenValues, indexRechterkind);
+        return left && right;
+    }
+
 
     public List<E> geefDeelboom(E data) {
         int index = values.indexOf(data);
@@ -182,9 +205,9 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         result.add(data);
         List<Integer> kinderen = new ArrayList<>();
         List<Integer> kleinkinderen;
-        if (isValidIndex(getIndexLinkerkind(index)))
+        if (getIndexLinkerkind(index) >= 0)
             kinderen.add(getIndexLinkerkind(index));
-        if (isValidIndex(getIndexRechterkind(index)))
+        if (getIndexRechterkind(index) >= 0)
             kinderen.add(getIndexRechterkind(index));
         while (kinderen.size() > 0) {
             kleinkinderen = new ArrayList<>();
@@ -192,9 +215,9 @@ public class BinaryMinHeap<E extends Comparable<E>> {
                 // voeg kinderen toe aan result
                 result.add(values.get(i));
                 // bereken voor elk kind het kleinkind en bewaar het
-                if (getIndexLinkerkind(i) > 0)
+                if (getIndexLinkerkind(i) >= 0)
                     kleinkinderen.add(getIndexLinkerkind(i));
-                if (getIndexRechterkind(i) > 0)
+                if (getIndexRechterkind(i) >= 0)
                     kleinkinderen.add(getIndexRechterkind(i));
             }
             // kopieer kleinkinderen naar lijst kinderen
@@ -208,5 +231,6 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return result;
 
     }
+
 
 }

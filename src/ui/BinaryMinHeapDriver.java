@@ -2,6 +2,11 @@ package ui;
 
 import domain.BinaryMinHeap;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class BinaryMinHeapDriver {
 
 	public static void main(String[] args) {
@@ -29,6 +34,13 @@ public class BinaryMinHeapDriver {
 		System.out.println(heap.getPath(2));
 		System.out.println(heap.getPath(5));
 		System.out.println(heap.geefDeelboom(2));
+
+		List<String> lijstGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "K", "J"});
+		List<String> lijstOnGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "A", "J"});
+		System.out.println(BinaryMinHeap.isValidArrayOfValues(lijstGeldig));
+		System.out.println(BinaryMinHeap.isValidArrayOfValues(lijstOnGeldig));
+
+
 	}
 
 }
