@@ -1,6 +1,8 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BinaryMinHeap<E extends Comparable<E>> {
     private ArrayList<E> values;
@@ -22,52 +24,56 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return values.get(0);
     }
 
-//    public boolean addValue(E value) {
-//        // geen null toevoegen aan de heap
-//        if (value == null) throw new IllegalArgumentException();
-//        // indien de heap leeg is: eerst initialiseren
-//        if (this.isEmpty())
-//            values = new ArrayList<E>();
-//
-//        values.add(value);//achteraan toevoegen
-//        this.bubbleUp();//bubbleUp vanaf de laatste zie slides theorie
-//        return true;
-//    }
-
     public boolean addValue(E value) {
-        if (value == null)
-            throw new IllegalArgumentException("Geen lege waarde toevoegen");
-        if (isEmpty())
-            values = new ArrayList<>();
-        values.add(value);
-        this.bubbleUp();
+        // geen null toevoegen aan de heap
+        if (value == null) throw new IllegalArgumentException();
+        // indien de heap leeg is: eerst initialiseren
+        if (this.isEmpty())
+            values = new ArrayList<E>();
+
+        values.add(value);//achteraan toevoegen
+        this.bubbleUp();//bubbleUp vanaf de laatste zie slides theorie
         return true;
     }
 
+    /**
+     * Geeft true als gegeven index een bestaande index is voor deze heap
+     */
     private boolean isValidIndex(int index) {
         return index >= 0 && index < values.size();
     }
 
+    /**
+     * Geeft index van rechterkind van gegeven index als rechterkind bestaat
+     * Geeft -1 terug als rechterkind niet bestaat of gegeven index niet geldig is
+     */
     private int getIndexRechterkind(int index) {
-        return 2 * index + 2;
+        if (!isValidIndex(index))
+            return -1;
+        int temp = 2 * index + 2;
+        return isValidIndex(temp) ? temp : -1;
     }
 
+    /**
+     * Geeft index van linkerkind van gegeven index als linkerkind bestaat
+     * Geeft -1 als linkerkind niet bestaat of gegeven index niet geldig is
+     */
     private int getIndexLinkerkind(int index) {
-        return 2 * index + 1;
+        if (!isValidIndex(index))
+            return -1;
+        int temp = 2 * index + 1;
+        return isValidIndex(temp) ? temp : -1;
     }
 
+    /**
+     * Geeft index van ouder van gegeven index als ouder bestaat
+     * Geeft -1 terug als ouder niet bestaat of gegeven index niet geldig is
+     */
     private int getIndexOuder(int index) {
-        return index == 0 ? -1 : (index - 1) / 2;
+        if (!isValidIndex(index) || index == 0)
+            return -1;
+        return (index - 1) / 2;
     }
-
-    private boolean heeftRechterKind(int index) {
-        return isValidIndex(getIndexRechterkind(index));
-    }
-
-    private boolean heeftLinkerKind(int index) {
-        return isValidIndex(getIndexLinkerkind(index));
-    }
-
 
     private void bubbleUp() {
         int kind = values.size() - 1;
@@ -79,12 +85,16 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         }
     }
 
+    /**
+     * Verwisselt waarden op index1 en index2 van plaats
+     */
     private void verwissel(int index1, int index2) {
         if (!isValidIndex(index1) || !isValidIndex(index2))
             throw new IllegalArgumentException("No valid index for verwissel");
         E temp = values.get(index1);
         values.set(index1, values.get(index2));
         values.set(index2, temp);
+        //Collections.swap(values,index1,index2);
     }
 
 
@@ -124,10 +134,7 @@ public class BinaryMinHeap<E extends Comparable<E>> {
     }
 
     private int geefIndexKleinste(int een, int twee, int drie) {
-        int indexKleinste = geefIndexKleinste(een, twee);
-        if (values.get(drie).compareTo(values.get(indexKleinste)) < 0)
-            indexKleinste = drie;
-        return indexKleinste;
+        return geefIndexKleinste(drie, geefIndexKleinste(een, twee));
     }
 
     private int geefIndexKleinste(int een, int twee) {
@@ -139,7 +146,67 @@ public class BinaryMinHeap<E extends Comparable<E>> {
 
 
     public ArrayList<E> getPath(E value) {
-        // TODO zie oefening 6;
-        return null;
+        int index = values.indexOf(value);
+        if (index == -1)
+            return null;
+        ArrayList<E> result = new ArrayList<>();
+        result.add(value);
+        index = getIndexOuder(index);
+        while (index >= 0) {
+            result.add(0, values.get(index));
+            index = getIndexOuder(index);
+        }
+        return result;
     }
+
+    public boolean isValidArrayOfValues(List<E> givenValues) {
+        // to be completed
+        if (givenValues == null || givenValues.size() == 0)
+            return false;
+        int index = 0;
+        int kindLinks = 1;
+        int kindRechts = 2;
+        if (kindRechts >= 0 && kindRechts < givenValues.size()) {
+            if (givenValues.get(index).compareTo(givenValues.get(kindRechts)) > 0)
+                return false;
+            kindRechts = kindRechts;
+        }
+        return false;
+    }
+
+    public List<E> geefDeelboom(E data) {
+        int index = values.indexOf(data);
+        if (index < 0)
+            return null;
+        List<E> result = new ArrayList<>();
+        result.add(data);
+        List<Integer> kinderen = new ArrayList<>();
+        List<Integer> kleinkinderen;
+        if (isValidIndex(getIndexLinkerkind(index)))
+            kinderen.add(getIndexLinkerkind(index));
+        if (isValidIndex(getIndexRechterkind(index)))
+            kinderen.add(getIndexRechterkind(index));
+        while (kinderen.size() > 0) {
+            kleinkinderen = new ArrayList<>();
+            for (int i : kinderen) {
+                // voeg kinderen toe aan result
+                result.add(values.get(i));
+                // bereken voor elk kind het kleinkind en bewaar het
+                if (getIndexLinkerkind(i) > 0)
+                    kleinkinderen.add(getIndexLinkerkind(i));
+                if (getIndexRechterkind(i) > 0)
+                    kleinkinderen.add(getIndexRechterkind(i));
+            }
+            // kopieer kleinkinderen naar lijst kinderen
+            kinderen = new ArrayList<>();
+            for (int i : kleinkinderen) {
+                kinderen.add(i);
+            }
+
+        }
+
+        return result;
+
+    }
+
 }
