@@ -33,7 +33,8 @@ public class BinaryMinHeapDriver {
 		System.out.println(heap.getPath(3));
 		System.out.println(heap.getPath(2));
 		System.out.println(heap.getPath(5));
-		System.out.println(heap.geefDeelboom(2));
+		heap.geefDeelboom(-4).print();
+
 
 		List<String> lijstGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "K", "J"});
 		List<String> lijstOnGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "A", "J"});

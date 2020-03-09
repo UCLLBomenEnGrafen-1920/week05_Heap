@@ -163,6 +163,11 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return result;
     }
 
+    /**
+     * Controleert of lijst givenValues een geldige minHeap is
+     *
+     * @param givenValues: de lijst die gecontroleerd moet worden
+     */
     public static boolean isValidArrayOfValues(List<String> givenValues) {
         if (givenValues == null || givenValues.size() == 0)
             return false;
@@ -197,12 +202,17 @@ public class BinaryMinHeap<E extends Comparable<E>> {
     }
 
 
-    public List<E> geefDeelboom(E data) {
+    /**
+     * Geef deelboom van deze minheap met gegeven data als wortel
+     *
+     * @return
+     */
+    public BinaryMinHeap<E> geefDeelboom(E data) {
         int index = values.indexOf(data);
         if (index < 0)
             return null;
-        List<E> result = new ArrayList<>();
-        result.add(data);
+        BinaryMinHeap<E> result = new BinaryMinHeap<>();
+        result.addValue(data);
         List<Integer> kinderen = new ArrayList<>();
         List<Integer> kleinkinderen;
         if (getIndexLinkerkind(index) >= 0)
@@ -213,7 +223,7 @@ public class BinaryMinHeap<E extends Comparable<E>> {
             kleinkinderen = new ArrayList<>();
             for (int i : kinderen) {
                 // voeg kinderen toe aan result
-                result.add(values.get(i));
+                result.addValue(values.get(i));
                 // bereken voor elk kind het kleinkind en bewaar het
                 if (getIndexLinkerkind(i) >= 0)
                     kleinkinderen.add(getIndexLinkerkind(i));
@@ -231,6 +241,5 @@ public class BinaryMinHeap<E extends Comparable<E>> {
         return result;
 
     }
-
 
 }
