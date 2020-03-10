@@ -1,11 +1,13 @@
 package ui;
 
 import domain.BinaryMinHeap;
+import domain.Checker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.zip.CheckedInputStream;
 
 public class BinaryMinHeapDriver {
 
@@ -38,8 +40,8 @@ public class BinaryMinHeapDriver {
 
 		List<String> lijstGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "K", "J"});
 		List<String> lijstOnGeldig = Arrays.asList(new String[]{"A", "D", "F", "H", "I", "J", "G", "A", "J"});
-		System.out.println(BinaryMinHeap.isValidArrayOfValues(lijstGeldig));
-		System.out.println(BinaryMinHeap.isValidArrayOfValues(lijstOnGeldig));
+		System.out.println(Checker.isValidArrayOfValues(lijstGeldig));
+		System.out.println(Checker.isValidArrayOfValues(lijstOnGeldig));
 
 
 	}
